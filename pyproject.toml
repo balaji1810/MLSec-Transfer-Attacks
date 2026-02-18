@@ -1,0 +1,14 @@
+[project]
+name = "mlsec-transfer-attacks"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "adversarial-robustness-toolbox>=1.20.1",
+    "robustbench",
+    "torch>=2.10.0",
+]
+
+[tool.uv.sources]
+robustbench = { git = "https://github.com/RobustBench/robustbench.git" }
