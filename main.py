@@ -11,7 +11,26 @@ from robustbench.utils import load_model
 from art.attacks.evasion import FastGradientMethod
 from art.estimators.classification import PyTorchClassifier
 
+import matplotlib.pyplot as plt
+
 from src.models import ResNet18_CIFAR10
+
+
+def visualize_adversarial_examples(x, x_adv, y_true, y_pred):
+    # Visualize original and adversarial examples
+    x = x * 255  # scale back to [0, 255] for visualization
+    x_adv = x_adv * 255
+    fig, axes = plt.subplots(2, 5, figsize=(15, 6))
+    for i in range(5):
+        axes[0, i].imshow(x[i].transpose(1, 2, 0).astype(np.uint8))
+        axes[0, i].set_title(f"True: {y_true[i]}, Pred: {y_pred[i]}")
+        axes[0, i].axis('off')
+
+        axes[1, i].imshow(x_adv[i].transpose(1, 2, 0).astype(np.uint8))
+        axes[1, i].set_title(f"Adversarial Example")
+        axes[1, i].axis('off')
+    plt.tight_layout()
+    plt.show()
 
 
 def train_surrogate_model() -> PyTorchClassifier:
@@ -85,7 +104,7 @@ def main():
     # use ART Classifier wrapper to evaluate the surrogate model as ART expects it for attecks.
     surrogate_classifier = PyTorchClassifier(
         model=surrogate_model,
-        clip_values=(0, 255),
+        clip_values=(0, 1),
         loss=criterion,
         optimizer=optimizer,
         input_shape=(3, 32, 32),
@@ -95,15 +114,14 @@ def main():
 
     # use numpy arrays as ART works with them
     # TODO increase number of samples to evaluate on
-    test_size = 10
-    x = test_data.data[:test_size].transpose(0, 3, 1, 2)  # Convert to (N, C, H, W)
-    y = test_data.targets[:test_size]
-    predictions = surrogate_classifier.predict(x)
+    x, y = next(iter(test_loader)) # just check one batch
+    y = y.detach().numpy()  # convert to numpy array as only used for accuracy calculation
+    predictions = surrogate_classifier.predict(x.detach().numpy())
     accuracy = np.sum(np.argmax(predictions, axis=1) == y) / len(y)
     print("Accuracy surrogate model: {}%".format(accuracy * 100))
 
     attack = FastGradientMethod(estimator=surrogate_classifier, eps=0.2)
-    x_test_adv = attack.generate(x)
+    x_test_adv = attack.generate(x.detach().numpy())
 
     predictions = surrogate_classifier.predict(x_test_adv)
     accuracy = np.sum(np.argmax(predictions, axis=1) == y) / len(y)
@@ -111,10 +129,7 @@ def main():
 
 
     #------------------- Evaluate robust model on clean and adversarial examples -----------------
-
-    # redeclare using torch tensors for the rest runs in torch
-    x = next(iter(test_loader))[0][:test_size]  # get the first batch of test data and take only the first test_size samples
-    x_test_adv = torch.tensor(x_test_adv, dtype=torch.float32)
+    x_test_adv = torch.tensor(x_test_adv, dtype=torch.float32)  # needed as rest runs in torch
     # model is a torch model, it uses tensors.
     robust_model = load_model(model_name='Carmon2019Unlabeled', dataset="cifar10", threat_model="Linf")
     robust_model.eval()
@@ -124,6 +139,7 @@ def main():
     accuracy_robust_adversarial = np.sum(np.argmax(predictions_robust_adversarial.detach().numpy(), axis=1) == y) / len(y)
     print("Accuracy on clean data on robust model: {}%".format(accuracy_robust * 100))
     print("Accuracy on adversarial data on robust model: {}%".format(accuracy_robust_adversarial * 100))
+    visualize_adversarial_examples(x.detach().numpy(), x_test_adv.detach().numpy(), y, np.argmax(predictions_robust_adversarial.detach().numpy(), axis=1))
 
 
 if __name__ == "__main__":
