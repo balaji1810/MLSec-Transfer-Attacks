@@ -1,0 +1,7 @@
+surrogate_models:
+    - name: "Standard"
+      source: "robustbench"
+      normalize: False
+    - name: "cifar10_resnet20"
+      source: "chenyaofo/pytorch-cifar-models"
+      normalize: True
