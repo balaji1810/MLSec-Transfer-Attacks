@@ -1,3 +1,8 @@
+/data/
+/models/
+PyTorch_CIFAR10/
+state_dicts/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
