@@ -5,3 +5,8 @@ surrogate_models:
     - name: "cifar10_resnet20"
       source: "chenyaofo/pytorch-cifar-models"
       normalize: True
+
+target_models:
+    - name: 'Kang2021Stable'  # WideResNet-70-16 with neural ODE block, autoattack unreliable in list.
+    - name: 'Bartoldson2024Adversarial_WRN-94-16'  # WideResNet-94-16, best from the list
+    - name: 'Chen2020Adversarial'  # ResNet-50, different architecture, autoattack unreliable not known in list..

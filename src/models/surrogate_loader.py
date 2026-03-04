@@ -1,23 +1,11 @@
 """
 find model id's at https://github.com/chenyaofo/pytorch-cifar-models
 """
-import torch
-import torch.nn as nn
-from robustbench import load_model
 from .model_wrapper import EnsembleWrapper
+from .model_utils import load_from_robustbench, load_from_torch_hub
 
 
-def load_from_robustbench(model: dict) -> nn.Module:
-    model = load_model(model_name=model['name'], dataset='cifar10', threat_model='Linf')
-    return model
-
-
-def load_from_torch_hub(model: dict) -> nn.Module:
-    model = torch.hub.load(model['source'], model['name'], pretrained=True)
-    return model
-
-
-def load_surrogate_models(surrogate_models: list[dict], **kargs) -> EnsembleWrapper:
+def load_surrogate_models(surrogate_models: list[dict], device: str, **kargs) -> EnsembleWrapper:
     """
     If the config was loaded correctly, this should work fine:
     >>> surrogate_models = load_surrogate_models(**config)
@@ -46,4 +34,4 @@ def load_surrogate_models(surrogate_models: list[dict], **kargs) -> EnsembleWrap
             case _:
                 raise ValueError(f"Unknown surrogate model source: {model['source']}")
 
-    return EnsembleWrapper(surrogates=loaded_surrogate_models, normalize=normalize_filter)
+    return EnsembleWrapper(surrogates=loaded_surrogate_models, normalize=normalize_filter).to(device)

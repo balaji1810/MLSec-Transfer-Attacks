@@ -56,7 +56,7 @@ class EnsembleWrapper(nn.Module):
         x_norm = TF.normalize(x, mean=self.mean, std=self.std)
         
         surrogate_norm_outputs = [m(x_norm) for m in self.surrogates_norm]
-        surrogate_std_outputs = [m(x_norm) for m in self.surrogates_std]
+        surrogate_std_outputs = [m(x) for m in self.surrogates_std]
 
         outputs = surrogate_norm_outputs + surrogate_std_outputs
 
