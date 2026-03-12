@@ -1,19 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "mlsec-transfer-attacks"
+name = "ml-sec-transfer-attack"
 version = "0.1.0"
-description = "Add your description here"
+description = "Transfer-based adversarial attack study on CIFAR-10 RobustBench models"
+requires-python = ">=3.10"
 readme = "README.md"
-requires-python = ">=3.11, <3.14"
+license = { file = "LICENSE" }
 dependencies = [
-    "adversarial-robustness-toolbox>=1.20.1",
-    "foolbox>=3.3.4",
-    "matplotlib>=3.10.8",
-    "notebook>=7.5.4",
-    "pyside6>=6.10.2",
-    "pyyml>=0.0.2",
+    "torch",
+    "torchvision",
     "robustbench",
-    "torch>=2.10.0",
+    "torchattack",
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "seaborn",
+    "tqdm",
+    "pyyaml",
+    "tabulate",
+    "git+https://github.com/RobustBench/robustbench.git"
 ]
 
-[tool.uv.sources]
-robustbench = { git = "https://github.com/RobustBench/robustbench.git" }
+[tool.setuptools]
+packages = ["src"]

@@ -1,6 +1,0 @@
-torch>=2.10.0
-torchvision
-numpy
-matplotlib
-git+https://github.com/RobustBench/robustbench.git
-foolbox
