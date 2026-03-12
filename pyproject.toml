@@ -20,7 +20,7 @@ dependencies = [
     "tqdm",
     "pyyaml",
     "tabulate",
-    "git+https://github.com/RobustBench/robustbench.git"
+    "robustbench @ git+https://github.com/RobustBench/robustbench.git"
 ]
 
 [tool.setuptools]
