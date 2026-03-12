@@ -3,6 +3,7 @@ import time
 import pandas as pd
 import matplotlib.pyplot as plt
 from tabulate import tabulate
+import torch
 
 
 def results_to_dataframe(results: list[dict]) -> pd.DataFrame:
@@ -133,3 +134,63 @@ def generate_all_reports(results: list[dict], output_dir: str) -> pd.DataFrame:
     )
 
     return df
+
+CIFAR10_CLASSES = [
+    "airplane", "automobile", "bird", "cat", "deer",
+    "dog", "frog", "horse", "ship", "truck",
+]
+
+def save_fooled_images(
+    clean_images: torch.Tensor,
+    adv_images: torch.Tensor,
+    labels: torch.Tensor,
+    clean_preds: torch.Tensor,
+    adv_preds: torch.Tensor,
+    surrogate_name: str,
+    attack_name: str,
+    target_name: str,
+    output_dir: str,
+) -> None:
+    save_dir = os.path.join(output_dir, f"{surrogate_name}__{attack_name}__{target_name}")
+    os.makedirs(save_dir, exist_ok=True)
+
+    n = len(labels)
+
+    # Save raw tensors
+    torch.save({
+        "clean_images": clean_images,
+        "adv_images": adv_images,
+        "labels": labels,
+        "clean_preds": clean_preds,
+        "adv_preds": adv_preds,
+    }, os.path.join(save_dir, "fooled_data.pt"))
+
+    for i in range(n):
+        true_label = CIFAR10_CLASSES[labels[i]]
+        pred_clean = CIFAR10_CLASSES[clean_preds[i]]
+        pred_adv = CIFAR10_CLASSES[adv_preds[i]]
+
+        fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+        ax1, ax2 = axes
+
+        ax1.imshow(clean_images[i].permute(1, 2, 0).cpu())
+        ax1.set_title("Original", fontsize=10)
+        ax1.set_xticks([])
+        ax1.set_yticks([])
+        ax1.set_xlabel(f"True: {true_label}\nClean pred: {pred_clean}", fontsize=9)
+
+        ax2.imshow(adv_images[i].permute(1, 2, 0).cpu())
+        ax2.set_title("Adversarial", fontsize=10)
+        ax2.set_xticks([])
+        ax2.set_yticks([])
+        ax2.set_xlabel(f"Adv pred: {pred_adv}", fontsize=9)
+
+        fig.tight_layout(pad=0.5)
+
+        filename = f"{i:04d}_true_{true_label}_clean_{pred_clean}_adv_{pred_adv}.png"
+        filename = filename.replace(" ", "_")
+        out_path = os.path.join(save_dir, filename)
+        plt.savefig(out_path, bbox_inches="tight")
+        plt.close(fig)
+
+    print(f"Saved {n} fooled image pairs to {save_dir}/")

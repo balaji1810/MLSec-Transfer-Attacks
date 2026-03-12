@@ -24,14 +24,26 @@ surrogates:
   - name: "cifar10_vgg16_bn"
     source: "chenyaofo"
     needs_normalize: true
-    # normalize_mean: [0.4914, 0.4822, 0.4465]
-    # normalize_std:  [0.2023, 0.1994, 0.2010]
   
-  - name : "cifar10_resnet20"
-    source: "chenyaofo" 
+  # - name : "cifar10_resnet20"
+  #   source: "chenyaofo" 
+  #   needs_normalize: true
+
+  - name: "cifar10_resnet56"
+    source: "chenyaofo"
     needs_normalize: true
-    # normalize_mean: [0.4914, 0.4822, 0.4465]
-    # normalize_std:  [0.2023, 0.1994, 0.2010]
+
+  # - name: "cifar10_resnet44"
+  #   source: "chenyaofo"
+  #   needs_normalize: true
+
+  - name: "cifar10_mobilenetv2_x1_4"
+    source: "chenyaofo"
+    needs_normalize: true
+
+  - name: "cifar10_repvgg_a2"
+    source: "chenyaofo"
+    needs_normalize: true
 
 # --- Target robust models ---
 targets:
@@ -39,46 +51,62 @@ targets:
   #   source: "robustbench"
   #   needs_normalize: false
 
-  - name: "Chen2020Adversarial"
-    source: "robustbench"
-    needs_normalize: false
+  # - name: "Chen2020Adversarial" # ResNet-50
+  #   source: "robustbench"
+  #   needs_normalize: false
 
-  - name: 'Kang2021Stable'
+  # - name: 'Kang2021Stable'  # WideResNet-70-16
+  #   source: "robustbench"
+  #   needs_normalize: false
+  
+  # - name: 'Bartoldson2024Adversarial_WRN-94-16' # WideResNet-94-16
+  #   source: "robustbench"
+  #   needs_normalize: false
+
+  # - name: "Rebuffi2021Fixing_70_16_cutmix_extra"  # WideResNet-70-16
+  #   source: "robustbench"
+  #   needs_normalize: false
+
+  # - name: "Wang2023Better_WRN-70-16"  # WideResNet-70-16
+  #   source: "robustbench"
+  #   needs_normalize: false
+
+  # - name: "Gowal2021Improving_28_10_ddpm_100m"  # WideResNet-28-10
+  #   source: "robustbench"
+  #   needs_normalize: false
+  
+  - name: "Sehwag2021Proxy_R18" # ResNet-18
     source: "robustbench"
     needs_normalize: false
   
-  # - name: 'Bartoldson2024Adversarial_WRN-94-16'
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  - name: "Rebuffi2021Fixing_70_16_cutmix_extra"
+  - name: "Addepalli2022Efficient_RN18" # ResNet-18
     source: "robustbench"
     needs_normalize: false
 
-  # - name: "Wang2023Better_WRN-70-16"
-  #   source: "robustbench"
-  #   needs_normalize: false
+  - name: "Xu2023Exploring_WRN-28-10" # WideResNet-28-10
+    source: "robustbench"
+    needs_normalize: false
 
 # --- Attacks ---
 attacks:
-  - name: "MIFGSM"
-    params:
-      steps: 10
-      decay: 1.0
+  # - name: "MIFGSM"
+  #   params:
+  #     steps: 10
+  #     decay: 1.0
 
-  - name: "DIFGSM"
-    params:
-      steps: 10
-      decay: 1.0
-      resize_rate: 0.9
-      diversity_prob: 1.0
+  # - name: "DIFGSM"
+  #   params:
+  #     steps: 10
+  #     decay: 1.0
+  #     resize_rate: 0.9
+  #     diversity_prob: 1.0
 
-  - name: "TIFGSM"
-    params:
-      steps: 10
-      decay: 1.0
-      kern_len: 15
-      n_sig: 3
+  # - name: "TIFGSM"
+  #   params:
+  #     steps: 10
+  #     decay: 1.0
+  #     kern_len: 15
+  #     n_sig: 3
 
   - name: "SINIFGSM"
     params:
@@ -94,12 +122,12 @@ attacks:
       size: 3
       num_classes: 10
 
-  - name: "VMIFGSM"
-    params:
-      steps: 10
-      decay: 1.0
-      n: 5
-      beta: 1.5
+  # - name: "VMIFGSM"
+  #   params:
+  #     steps: 10
+  #     decay: 1.0
+  #     n: 5
+  #     beta: 1.5
 
 # --- Ensemble surrogate attack ---
 ensemble:

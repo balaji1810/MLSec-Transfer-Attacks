@@ -50,6 +50,7 @@ def evaluate_transfer(
         fooled = correct_clean & (~correct_adv)
         asr = fooled.sum().item() / num_correct_clean * 100.0
     else:
+        fooled = torch.zeros(n, dtype=torch.bool)
         asr = 0.0
 
     # Perturbation statistics
@@ -66,4 +67,7 @@ def evaluate_transfer(
         "attack_success_rate": round(asr, 2),
         "mean_linf_perturbation": round(mean_linf, 6),
         "max_linf_perturbation": round(max_linf, 6),
+        "fooled_mask": fooled,
+        "adv_preds": adv_preds,
+        "clean_preds": clean_preds,
     }

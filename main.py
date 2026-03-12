@@ -12,7 +12,7 @@ from src.models import load_surrogate, load_target, build_ensemble
 from src.attacks import create_attack, generate_adversarial_examples
 from src.evaluate import evaluate_transfer
 from src.metadata import get_reported_robust_acc, get_reported_clean_acc
-from src.reporting import generate_all_reports
+from src.reporting import generate_all_reports, save_fooled_images
 
 
 def set_seed(seed: int) -> None:
@@ -50,9 +50,11 @@ def run_single_experiment(
     batch_size: int,
     model_dir: str,
     device: torch.device,
+    output_dir: str,
+    save_fooled: bool = True,
 ) -> list[dict]:
     print(f"\n{'-' * 60}")
-    print(f"  Surrogate: {surrogate_name}  |  Attack: {attack_name}")
+    print(f"Surrogate: {surrogate_name}  |  Attack: {attack_name}")
     print(f"{'-' * 60}")
 
     # Create attack
@@ -93,6 +95,23 @@ def run_single_experiment(
             batch_size=batch_size,
             device=device,
         )
+
+        # Save fooled adversarial images
+        fooled_mask = metrics.pop("fooled_mask")
+        if fooled_mask.any() and save_fooled:
+            adv_preds = metrics.pop("adv_preds")
+            clean_preds = metrics.pop("clean_preds")
+            save_fooled_images(
+                clean_images=images[fooled_mask],
+                adv_images=adv_images[fooled_mask],
+                labels=labels[fooled_mask],
+                clean_preds=clean_preds[fooled_mask],
+                adv_preds=adv_preds[fooled_mask],
+                surrogate_name=surrogate_name,
+                attack_name=attack_name,
+                target_name=tgt_name,
+                output_dir=os.path.join(output_dir, "fooled_images"),
+            )
 
         # Reported values
         reported_robust = get_reported_robust_acc(tgt_name)
@@ -227,6 +246,8 @@ def main():
                     batch_size=batch_size,
                     model_dir=model_dir,
                     device=device,
+                    output_dir=output_dir,
+                    save_fooled=cfg["output"]["save_adv_examples"],
                 )
                 all_results.extend(results)
 
@@ -265,6 +286,8 @@ def main():
                 batch_size=batch_size,
                 model_dir=model_dir,
                 device=device,
+                output_dir=output_dir,
+                save_fooled=cfg["output"]["save_adv_examples"],
             )
             all_results.extend(results)
 
