@@ -4,17 +4,21 @@ import torchvision.transforms.functional as TF
 
 from robustbench import load_model
 
-from typing import Callable
-
 class ModelWrapper(nn.Module):
-    def __init__(self, model: nn.Module, normalize_fn: Callable | None = None):
+    def __init__(self, model: nn.Module, normalize: bool = False):
         super().__init__()
         self.model = model
-        self.normalize_fn = normalize_fn
+        self.normalize = normalize
+
+    def _normalize_fn(self, x : torch.Tensor) -> torch.Tensor:
+        mean = [0.4914, 0.4822, 0.4465]
+        std = [0.2471, 0.2435, 0.2616]
+        normalize = TF.normalize(x, mean, std)
+        return normalize
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        if self.normalize_fn is not None:
-            x = self.normalize_fn(x)
+        if self.normalize:
+            x = self._normalize_fn(x)
         return self.model(x)
     
 class EnsembleWrapper(nn.Module):
@@ -25,12 +29,6 @@ class EnsembleWrapper(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         logits = [m(x) for m in self.models]
         return torch.stack(logits).mean(dim=0)
-    
-def normalize_fn(x : torch.Tensor) -> torch.Tensor:
-    mean = [0.4914, 0.4822, 0.4465]
-    std = [0.2471, 0.2435, 0.2616]
-    normalize = TF.normalize(x, mean, std)
-    return normalize
 
 def load_from_robustbench(
     model_name: str,
@@ -62,10 +60,10 @@ def load_surrogate(
     cfg: dict,
     model_dir: str = "./models",
     device: torch.device | str = "cuda",
-) -> tuple[nn.Module, Callable | None]:
+) -> tuple[nn.Module, bool]:
     source = cfg["source"]
     name = cfg["name"]
-    normalize_fn = None
+    normalize = False
 
     if source == "robustbench":
         model = load_from_robustbench(name, model_dir=model_dir, device=device)
@@ -75,9 +73,9 @@ def load_surrogate(
         raise ValueError(f"Unknown source: {source}")
 
     if cfg.get("needs_normalize", False):
-        normalize_fn = normalize_fn
+        normalize = True
 
-    return model, normalize_fn
+    return model, normalize
 
 def load_target(
     cfg: dict,
@@ -101,8 +99,8 @@ def build_ensemble(
 ) -> tuple[nn.Module, None]:
     wrapped_models = []
     for cfg in surrogate_configs:
-        model, norm_fn = load_surrogate(cfg, model_dir=model_dir, device=device)
-        wrapped = ModelWrapper(model, norm_fn)
+        model, normalize = load_surrogate(cfg, model_dir=model_dir, device=device)
+        wrapped = ModelWrapper(model, normalize)
         wrapped_models.append(wrapped)
 
     ensemble = EnsembleWrapper(wrapped_models).to(device).eval()
