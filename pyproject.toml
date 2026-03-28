@@ -10,7 +10,7 @@ dependencies = [
     "matplotlib>=3.10.8",
     "notebook>=7.5.4",
     "pyside6>=6.10.2",
-    "pyyml>=0.0.2",
+    "pyyaml>=0.0.2",
     "robustbench",
     "torch>=2.10.0",
 ]

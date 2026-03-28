@@ -24,18 +24,10 @@ surrogates:
   - name: "cifar10_vgg16_bn"
     source: "chenyaofo"
     needs_normalize: true
-  
-  # - name : "cifar10_resnet20"
-  #   source: "chenyaofo" 
-  #   needs_normalize: true
 
   - name: "cifar10_resnet56"
     source: "chenyaofo"
     needs_normalize: true
-
-  # - name: "cifar10_resnet44"
-  #   source: "chenyaofo"
-  #   needs_normalize: true
 
   - name: "cifar10_mobilenetv2_x1_4"
     source: "chenyaofo"
