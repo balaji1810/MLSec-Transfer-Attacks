@@ -251,9 +251,6 @@ def main():
                 )
                 all_results.extend(results)
 
-                # Save incremental results
-                _save_incremental(all_results, output_dir)
-
             # Free surrogate to save VRAM
             del surrogate_model
             if torch.cuda.is_available():
@@ -291,8 +288,6 @@ def main():
             )
             all_results.extend(results)
 
-            _save_incremental(all_results, output_dir)
-
         del ensemble_model
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -310,13 +305,6 @@ def main():
     print("Experiment complete")
     print(f"Results saved to: {output_dir}/")
     print(f"{'=' * 70}")
-
-
-def _save_incremental(results: list[dict], output_dir: str) -> None:
-    os.makedirs(output_dir, exist_ok=True)
-    path = os.path.join(output_dir, f"results_incremental_{time.time()}.json")
-    with open(path, "w") as f:
-        json.dump(results, f, indent=2)
 
 
 if __name__ == "__main__":
