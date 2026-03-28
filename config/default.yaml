@@ -5,7 +5,7 @@ device: "auto"
 data:
   dataset: "cifar10"
   data_dir: "./data"
-  num_samples: 10
+  num_samples: 100
   batch_size: 10
 
 # --- Threat model ---
@@ -39,17 +39,54 @@ surrogates:
 
 # --- Target robust models ---
 targets:
+
+  - name: 'Kang2021Stable'  # WideResNet-70-16
+    source: "robustbench"
+    needs_normalize: false
+  
+  - name: "Rice2020Overfitting"
+    source: "robustbench"
+    needs_normalize: false
+
+  - name: "Wong2020Fast"
+    source: "robustbench"
+    needs_normalize: false
+
+  - name: "Andriushchenko2020Understanding"
+    source: "robustbench"
+    needs_normalize: false
+
+  - name: "Ding2020MMA"
+    source: "robustbench"
+    needs_normalize: false
+
+  - name: "Engstrom2019Robustness"
+    source: "robustbench"
+    needs_normalize: false
+
+  - name: "Zhang2019You"
+    source: "robustbench"
+    needs_normalize: false
+
+  - name: "Sitawarin2020Improving"
+    source: "robustbench"
+    needs_normalize: false
+
+  - name: "Huang2020Self"
+    source: "robustbench"
+    needs_normalize: false
+
+  - name: "Chen2020Efficient"
+    source: "robustbench"
+    needs_normalize: false
+
+  - name: "Chen2020Adversarial"
+    source: "robustbench"
+    needs_normalize: false
+
   # - name: "Carmon2019Unlabeled"
   #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Chen2020Adversarial" # ResNet-50
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: 'Kang2021Stable'  # WideResNet-70-16
-  #   source: "robustbench"
-  #   needs_normalize: false
+  #   needs_normalize: false  
   
   # - name: 'Bartoldson2024Adversarial_WRN-94-16' # WideResNet-94-16
   #   source: "robustbench"
@@ -67,17 +104,17 @@ targets:
   #   source: "robustbench"
   #   needs_normalize: false
   
-  - name: "Sehwag2021Proxy_R18" # ResNet-18
-    source: "robustbench"
-    needs_normalize: false
+  # - name: "Sehwag2021Proxy_R18" # ResNet-18
+  #   source: "robustbench"
+  #   needs_normalize: false
   
-  - name: "Addepalli2022Efficient_RN18" # ResNet-18
-    source: "robustbench"
-    needs_normalize: false
+  # - name: "Addepalli2022Efficient_RN18" # ResNet-18
+  #   source: "robustbench"
+  #   needs_normalize: false
 
-  - name: "Xu2023Exploring_WRN-28-10" # WideResNet-28-10
-    source: "robustbench"
-    needs_normalize: false
+  # - name: "Xu2023Exploring_WRN-28-10" # WideResNet-28-10
+  #   source: "robustbench"
+  #   needs_normalize: false
 
 # --- Attacks ---
 attacks:
@@ -100,11 +137,11 @@ attacks:
   #     kern_len: 15
   #     n_sig: 3
 
-  - name: "SINIFGSM"
-    params:
-      steps: 10
-      decay: 1.0
-      m: 3
+  # - name: "SINIFGSM"
+  #   params:
+  #     steps: 10
+  #     decay: 1.0
+  #     m: 3
 
   - name: "Admix"
     params:
