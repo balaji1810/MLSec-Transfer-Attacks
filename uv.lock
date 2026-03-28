@@ -1240,6 +1240,7 @@ dependencies = [
     { name = "matplotlib" },
     { name = "notebook" },
     { name = "pyside6" },
+    { name = "pyyml" },
     { name = "robustbench" },
     { name = "torch" },
 ]
@@ -1251,6 +1252,7 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "notebook", specifier = ">=7.5.4" },
     { name = "pyside6", specifier = ">=6.10.2" },
+    { name = "pyyml", specifier = ">=0.0.2" },
     { name = "robustbench", git = "https://github.com/RobustBench/robustbench.git" },
     { name = "torch", specifier = ">=2.10.0" },
 ]
@@ -1937,6 +1939,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/de/94/980b50a6531b3019e45ddeada0626d45fa85cbe22300844a7983285bed3b/pyyaml-6.0.3-cp313-cp313-win32.whl", hash = "sha256:d0eae10f8159e8fdad514efdc92d74fd8d682c933a6dd088030f3834bc8e6b26", size = 137427, upload-time = "2025-09-25T21:32:32.58Z" },
     { url = "https://files.pythonhosted.org/packages/97/c9/39d5b874e8b28845e4ec2202b5da735d0199dbe5b8fb85f91398814a9a46/pyyaml-6.0.3-cp313-cp313-win_amd64.whl", hash = "sha256:79005a0d97d5ddabfeeea4cf676af11e647e41d81c9a7722a193022accdb6b7c", size = 154090, upload-time = "2025-09-25T21:32:33.659Z" },
     { url = "https://files.pythonhosted.org/packages/73/e8/2bdf3ca2090f68bb3d75b44da7bbc71843b19c9f2b9cb9b0f4ab7a5a4329/pyyaml-6.0.3-cp313-cp313-win_arm64.whl", hash = "sha256:5498cd1645aa724a7c71c8f378eb29ebe23da2fc0d7a08071d89469bf1d2defb", size = 140246, upload-time = "2025-09-25T21:32:34.663Z" },
+]
+
+[[package]]
+name = "pyyml"
+version = "0.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/37/03/06f9809cf57ef6fdffe11a4bf7c0c092835913da05bfce9d618ac6f714af/pyyml-0.0.2.tar.gz", hash = "sha256:f005c753eb36a405321eb653d803861c8570c347f89b35a7c9c21edef5248f5f", size = 1406, upload-time = "2019-04-09T11:07:29.202Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/20/c4/3996ead5533b19da63409c0e5e56827f0e5ed8228c771d587ac98c63c157/pyyml-0.0.2-py2.py3-none-any.whl", hash = "sha256:17acc886bb8d58197a745003eae477b18b343ebaa0a304527c5a5dc5770a2b74", size = 1489, upload-time = "2019-04-09T11:07:26.942Z" },
 ]
 
 [[package]]
