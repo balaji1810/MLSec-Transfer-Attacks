@@ -109,6 +109,10 @@ model_metadata: dict[str, dict] = {
         "reported_clean_acc": 86.04,
         "reported_robust_acc": 51.56,
     },
+    "Zhang2019Theoretically" : {
+        "reported_clean_acc": 84.92,
+        "reported_robust_acc": 53.08,
+    },
 }
 
 
