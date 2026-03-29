@@ -13,7 +13,13 @@ attacks: dict[str, type] = {
     "Admix": torchattack.Admix,
     "VMIFGSM": torchattack.VMIFGSM,
     "DeepFool": torchattack.DeepFool,
-    "SSP": torchattack.SSP
+    "SSP": torchattack.SSP,
+    "MuMoDIG": torchattack.MuMoDIG,
+    "MIG": torchattack.MIG,
+    "GRA": torchattack.GRA,
+    "DeCoWA": torchattack.DeCoWA,
+    "BSR": torchattack.BSR,
+    "L2T": torchattack.L2T,
 }
 
 
@@ -27,6 +33,7 @@ def create_attack(
 ) -> torchattack.Attack:
     atk_cls = attacks[attack_name]
     if attack_name == "DeepFool":
+        # DeepFool does not use eps, so we ignore it
         attack = atk_cls(model=model, normalize=normalize, device=device, **kwargs)
     else:
         attack = atk_cls(
@@ -50,6 +57,10 @@ def generate_adversarial_examples(
 ) -> torch.Tensor:
     adv_images_list = []
     n = len(images)
+
+    if(attack.__class__.__name__ in ["Admix", "MIG", "BSR"]):
+        print(f"Using {attack.__class__.__name__} attack, reducing batch size by half to save memory.")
+        batch_size = int(batch_size / 2)
 
     for start in tqdm(range(0, n, batch_size), desc="Generating adversarial examples"):
         end = min(start + batch_size, n)
