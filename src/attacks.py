@@ -5,12 +5,15 @@ from typing import Callable
 from tqdm import tqdm
 
 attacks: dict[str, type] = {
+    "IFGSM": torchattack.IFGSM,
     "MIFGSM": torchattack.MIFGSM,
     "DIFGSM": torchattack.DIFGSM,
     "TIFGSM": torchattack.TIFGSM,
     "SINIFGSM": torchattack.SINIFGSM,
     "Admix": torchattack.Admix,
     "VMIFGSM": torchattack.VMIFGSM,
+    "DeepFool": torchattack.DeepFool,
+    "SSP": torchattack.SSP
 }
 
 
@@ -23,15 +26,18 @@ def create_attack(
     **kwargs,
 ) -> torchattack.Attack:
     atk_cls = attacks[attack_name]
-    attack = atk_cls(
-        model=model,
-        normalize=normalize,
-        device=device,
-        eps=eps,
-        clip_min=0.0,
-        clip_max=1.0,
-        **kwargs,
-    )
+    if attack_name == "DeepFool":
+        attack = atk_cls(model=model, normalize=normalize, device=device, **kwargs)
+    else:
+        attack = atk_cls(
+            model=model,
+            normalize=normalize,
+            device=device,
+            eps=eps,
+            clip_min=0.0,
+            clip_max=1.0,
+            **kwargs,
+        )
     return attack
 
 
