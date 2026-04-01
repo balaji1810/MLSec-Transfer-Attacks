@@ -8,7 +8,7 @@ import numpy as np
 import yaml
 
 from src.data import load_cifar10_testset
-from src.models import load_surrogate, load_target, build_ensemble
+from src.models import ModelWrapper, load_surrogate, load_target, build_ensemble
 from src.attacks import create_attack, generate_adversarial_examples
 from src.evaluate import evaluate_transfer
 from src.metadata import get_reported_robust_acc, get_reported_clean_acc
@@ -229,6 +229,8 @@ def main():
                 surr_cfg, model_dir=model_dir, device=device
             )
 
+            surrogate_model = ModelWrapper(surrogate_model, normalize_fn).to(device)
+
             for atk_cfg in cfg["attacks"]:
                 atk_name = atk_cfg["name"]
                 atk_params = dict(atk_cfg.get("params", {}))
@@ -236,7 +238,7 @@ def main():
                 results = run_single_experiment(
                     surrogate_name=surr_name,
                     surrogate_model=surrogate_model,
-                    normalize_fn=normalize_fn,
+                    normalize_fn=None,
                     attack_name=atk_name,
                     attack_params=atk_params,
                     target_configs=cfg["targets"],

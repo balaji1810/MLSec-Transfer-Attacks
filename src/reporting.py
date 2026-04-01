@@ -16,32 +16,96 @@ def save_csv(df: pd.DataFrame, path: str) -> None:
     print(f"CSV saved to {path}")
 
 
-def print_summary_table(df: pd.DataFrame) -> None:
-    cols = [
-        "surrogate", "attack", "target",
-        "clean_accuracy", "adversarial_accuracy",
-        "attack_success_rate",
-        # "reported_robust_acc",
-        # "delta_vs_reported",
+def attack_column_prefix(attack_name: str) -> str:
+    prefix = "".join(
+        ch.lower() if ch.isalnum() else "_"
+        for ch in str(attack_name)
+    )
+    while "__" in prefix:
+        prefix = prefix.replace("__", "_")
+    return prefix.strip("_")
+
+
+def build_wide_summary_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    required_cols = {"surrogate", "target", "attack"}
+    if not required_cols.issubset(df.columns):
+        return df.copy()
+
+    key_cols = ["surrogate", "target"]
+    base_cols = [
+        c for c in ["clean_accuracy", "reported_robust_acc"]
+        if c in df.columns
     ]
-    display_cols = [c for c in cols if c in df.columns]
-    print(tabulate(df[display_cols], headers="keys", tablefmt="grid", # pyright: ignore[reportArgumentType]
-                   showindex=False, floatfmt=".2f"))
+
+    wide_df = (
+        df[key_cols + base_cols]
+        .groupby(key_cols, as_index=False)
+        .first()
+        .sort_values(key_cols)
+        .reset_index(drop=True)
+    )
+
+    attacks = sorted(df["attack"].dropna().unique(), key=lambda x: str(x).lower())
+    for attack_name in attacks:
+        attack_rows = df[df["attack"] == attack_name]
+        metric_cols = []
+        rename_map = {}
+
+        if "adversarial_accuracy" in attack_rows.columns:
+            metric_cols.append("adversarial_accuracy")
+            rename_map["adversarial_accuracy"] = (
+                f"{attack_column_prefix(attack_name)}_adversarial_acc"
+            )
+        if "attack_success_rate" in attack_rows.columns:
+            metric_cols.append("attack_success_rate")
+            rename_map["attack_success_rate"] = (
+                f"{attack_column_prefix(attack_name)}_asr"
+            )
+
+        if not metric_cols:
+            continue
+
+        per_attack = (
+            attack_rows[key_cols + metric_cols]
+            .groupby(key_cols, as_index=False)
+            .first()
+            .rename(columns=rename_map)
+        )
+        wide_df = wide_df.merge(per_attack, on=key_cols, how="left")
+
+    return wide_df
+
+
+def print_summary_table(df: pd.DataFrame) -> None:
+    summary_df = build_wide_summary_dataframe(df)
+    fixed_cols = ["surrogate", "target", "clean_accuracy", "reported_robust_acc"]
+    attack_cols = [
+        c for c in summary_df.columns
+        if c.endswith("_adversarial_acc") or c.endswith("_asr")
+    ]
+    display_cols = [c for c in fixed_cols + attack_cols if c in summary_df.columns]
+    if not display_cols:
+        display_cols = list(summary_df.columns)
+
+    print(tabulate(summary_df[display_cols], headers="keys", # pyright: ignore[reportArgumentType]
+                   tablefmt="grid", showindex=False, floatfmt=".2f"))
 
 
 def save_summary_markdown(df: pd.DataFrame, path: str) -> None:
-    cols = [
-        "surrogate", "attack", "target",
-        "clean_accuracy", "adversarial_accuracy",
-        "attack_success_rate", "reported_robust_acc",
-        "delta_vs_reported",
+    summary_df = build_wide_summary_dataframe(df)
+    fixed_cols = ["surrogate", "target", "clean_accuracy", "reported_robust_acc"]
+    attack_cols = [
+        c for c in summary_df.columns
+        if c.endswith("_adversarial_acc") or c.endswith("_asr")
     ]
-    display_cols = [c for c in cols if c in df.columns]
+    display_cols = [c for c in fixed_cols + attack_cols if c in summary_df.columns]
+    if not display_cols:
+        display_cols = list(summary_df.columns)
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         f.write("# Transfer Attack Results\n\n")
-        f.write(tabulate(df[display_cols], headers="keys", # pyright: ignore[reportArgumentType]
+        f.write(tabulate(summary_df[display_cols], headers="keys", # pyright: ignore[reportArgumentType]
                          tablefmt="github", showindex=False, floatfmt=".2f"))
         f.write("\n")
     print(f"Markdown summary saved to {path}")
@@ -53,12 +117,12 @@ def plot_transfer_accuracy_by_attack(df: pd.DataFrame, path: str) -> None:
     fig, ax = plt.subplots(figsize=(12, 6))
     pivot = df.pivot_table(
         index="attack", columns="target",
-        values="adversarial_accuracy", aggfunc="mean",
+        values="attack_success_rate", aggfunc="mean",
     )
     pivot.plot(kind="bar", ax=ax, edgecolor="black", width=0.8)
-    ax.set_ylabel("Transfer Adversarial Accuracy (%)")
+    ax.set_ylabel("Attack Success Rate (%)")
     ax.set_xlabel("Attack Method")
-    ax.set_title("Transfer Adversarial Accuracy by Attack and Target")
+    ax.set_title("Attack Success Rate by Attack and Target")
     ax.legend(title="Target Model", loc="upper left")
     ax.set_ylim(0, 100)
     plt.xticks(rotation=30, ha="right")
@@ -68,11 +132,11 @@ def plot_transfer_accuracy_by_attack(df: pd.DataFrame, path: str) -> None:
     print(f"Plot saved to {path}")
 
 
-def plot_best_transfer_vs_reported(df: pd.DataFrame, path: str) -> None:
+def plot_transfer_attack_vs_reported(df: pd.DataFrame, path: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
 
     best = df.groupby("target").agg(
-        best_transfer_adv_acc=("adversarial_accuracy", "min"),
+        transfer_adv_acc=("adversarial_accuracy", "min"),
         reported_robust_acc=("reported_robust_acc", "first"),
     ).reset_index()
 
@@ -85,14 +149,14 @@ def plot_best_transfer_vs_reported(df: pd.DataFrame, path: str) -> None:
         edgecolor="black",
     )
     bars2 = ax.bar(
-        [i + width / 2 for i in x], best["best_transfer_adv_acc"],
-        width, label="Best Transfer Adv Acc", color="#DD8452",
+        [i + width / 2 for i in x], best["transfer_adv_acc"],
+        width, label="Transfer Adv Acc", color="#DD8452",
         edgecolor="black",
     )
     ax.set_xticks(list(x))
     ax.set_xticklabels(best["target"], rotation=20, ha="right")
     ax.set_ylabel("Accuracy (%)")
-    ax.set_title("Best Transfer Attack vs Reported AutoAttack Robustness")
+    ax.set_title("Transfer Attack vs Reported AutoAttack Robustness")
     ax.legend()
     ax.set_ylim(0, 100)
 
@@ -120,17 +184,25 @@ def generate_all_reports(results: list[dict], output_dir: str) -> pd.DataFrame:
     print_summary_table(df)
 
     # CSV
-    save_csv(df, os.path.join(output_dir, f"results_{time.time()}.csv"))
+    # save_csv(df, os.path.join(output_dir, f"results_{time.time()}.csv"))
+    save_csv(df, os.path.join(output_dir, f"results.csv"))
 
     # Markdown
-    save_summary_markdown(df, os.path.join(output_dir, f"summary_{time.time()}.md"))
+    # save_summary_markdown(df, os.path.join(output_dir, f"summary_{time.time()}.md"))
+    save_summary_markdown(df, os.path.join(output_dir, f"summary.md"))
 
     # Plots
+    # plot_transfer_accuracy_by_attack(
+    #     df, os.path.join(output_dir, f"transfer_accuracy_by_attack_{time.time()}.png")
+    # )
     plot_transfer_accuracy_by_attack(
-        df, os.path.join(output_dir, f"transfer_accuracy_by_attack_{time.time()}.png")
+        df, os.path.join(output_dir, f"attack_success_rates.png")
     )
-    plot_best_transfer_vs_reported(
-        df, os.path.join(output_dir, f"best_transfer_vs_reported_{time.time()}.png")
+    # plot_transfer_attack_vs_reported(
+    #     df, os.path.join(output_dir, f"transfer_attack_vs_reported_{time.time()}.png")
+    # )
+    plot_transfer_attack_vs_reported(
+        df, os.path.join(output_dir, f"transfer_attack_vs_reported.png")
     )
 
     return df

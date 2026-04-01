@@ -1,12 +1,12 @@
-seed: 42
+seed: 50
 device: "auto"
 
 # --- Data ---
 data:
   dataset: "cifar10"
   data_dir: "./data"
-  num_samples: 100
-  batch_size: 10
+  num_samples: 1000
+  batch_size: 15
 
 # --- Threat model ---
 threat_model:
@@ -14,7 +14,7 @@ threat_model:
   epsilon: 0.03137254901960784   # 8/255
 
 # --- Surrogate models ---
-enable_single_surrogate_attacks: false
+enable_single_surrogate_attacks: true
 
 surrogates:
   - name: "Standard"
@@ -39,15 +39,6 @@ surrogates:
 
 # --- Target robust models ---
 targets:
-
-  - name: 'Kang2021Stable'  # WideResNet-70-16
-    source: "robustbench"
-    needs_normalize: false
-  
-  - name: "Rice2020Overfitting"
-    source: "robustbench"
-    needs_normalize: false
-
   - name: "Wong2020Fast"
     source: "robustbench"
     needs_normalize: false
@@ -59,23 +50,7 @@ targets:
   - name: "Ding2020MMA"
     source: "robustbench"
     needs_normalize: false
-
-  - name: "Engstrom2019Robustness"
-    source: "robustbench"
-    needs_normalize: false
-
-  - name: "Zhang2019You"
-    source: "robustbench"
-    needs_normalize: false
-
-  - name: "Sitawarin2020Improving"
-    source: "robustbench"
-    needs_normalize: false
-
-  - name: "Huang2020Self"
-    source: "robustbench"
-    needs_normalize: false
-
+  
   - name: "Chen2020Efficient"
     source: "robustbench"
     needs_normalize: false
@@ -83,6 +58,34 @@ targets:
   - name: "Chen2020Adversarial"
     source: "robustbench"
     needs_normalize: false
+
+  # - name: 'Kang2021Stable'  # WideResNet-70-16
+  #   source: "robustbench"
+  #   needs_normalize: false
+  
+  # - name: "Rice2020Overfitting"
+  #   source: "robustbench"
+  #   needs_normalize: false
+
+  # - name: "Engstrom2019Robustness"
+  #   source: "robustbench"
+  #   needs_normalize: false
+
+  # - name: "Zhang2019You"
+  #   source: "robustbench"
+  #   needs_normalize: false
+
+  # - name: "Sitawarin2020Improving"
+  #   source: "robustbench"
+  #   needs_normalize: false
+
+  # - name: "Huang2020Self"
+  #   source: "robustbench"
+  #   needs_normalize: false
+  
+  # - name: "Zhang2019Theoretically"
+  #   source: "robustbench"
+  #   needs_normalize: false
 
   # - name: "Carmon2019Unlabeled"
   #   source: "robustbench"
@@ -118,30 +121,25 @@ targets:
 
 # --- Attacks ---
 attacks:
-  # - name: "MIFGSM"
-  #   params:
-  #     steps: 10
-  #     decay: 1.0
+  - name: "DIFGSM"
+    params:
+      steps: 10
+      decay: 1.0
+      resize_rate: 0.9
+      diversity_prob: 1.0
 
-  # - name: "DIFGSM"
-  #   params:
-  #     steps: 10
-  #     decay: 1.0
-  #     resize_rate: 0.9
-  #     diversity_prob: 1.0
+  - name: "TIFGSM"
+    params:
+      steps: 10
+      decay: 1.0
+      kern_len: 15
+      n_sig: 3
 
-  # - name: "TIFGSM"
-  #   params:
-  #     steps: 10
-  #     decay: 1.0
-  #     kern_len: 15
-  #     n_sig: 3
-
-  # - name: "SINIFGSM"
-  #   params:
-  #     steps: 10
-  #     decay: 1.0
-  #     m: 3
+  - name: "SINIFGSM"
+    params:
+      steps: 10
+      decay: 1.0
+      m: 3
 
   - name: "Admix"
     params:
@@ -151,13 +149,12 @@ attacks:
       size: 3
       num_classes: 10
 
-  # - name: "VMIFGSM"
-  #   params:
-  #     steps: 10
-  #     decay: 1.0
-  #     n: 5
-  #     beta: 1.5
-
+  - name: "VMIFGSM"
+    params:
+      steps: 10
+      decay: 1.0
+      n: 5
+      beta: 1.5
 # --- Ensemble surrogate attack ---
 ensemble:
   enabled: true
