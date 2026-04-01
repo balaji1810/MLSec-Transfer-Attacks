@@ -1,7 +1,6 @@
 import argparse
 import os
 import time
-import json
 
 import torch
 import numpy as np
