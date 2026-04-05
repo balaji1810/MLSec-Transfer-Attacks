@@ -59,8 +59,8 @@ def generate_adversarial_examples(
     n = len(images)
 
     if(attack.__class__.__name__ in ["Admix", "MIG", "BSR"]):
-        print(f"Using {attack.__class__.__name__} attack, reducing batch size by half to save memory.")
-        batch_size = int(batch_size / 2)
+        batch_size = int(batch_size / 3)
+        print(f"Using {attack.__class__.__name__} attack, reducing batch size (b = {batch_size}) to save memory.")
 
     for start in tqdm(range(0, n, batch_size), desc="Generating adversarial examples"):
         end = min(start + batch_size, n)
