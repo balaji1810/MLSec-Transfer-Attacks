@@ -8,6 +8,7 @@ def load_cifar10_testset(
     data_dir: str = "./data",
     num_samples: int | None = None,
     seed: int = 42,
+    device: torch.device | str = "cuda",
 ) -> tuple[torch.Tensor, torch.Tensor]:
     dataset = torchvision.datasets.CIFAR10(
         root=data_dir, train=False, download=True,
@@ -25,4 +26,4 @@ def load_cifar10_testset(
         all_images = all_images[indices]
         all_labels = all_labels[indices]
 
-    return all_images, all_labels
+    return all_images.to(device), all_labels.to(device)

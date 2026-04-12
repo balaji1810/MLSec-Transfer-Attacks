@@ -10,16 +10,16 @@ def get_predictions(
     device: torch.device | str = "cuda",
 ) -> torch.Tensor:
     model.eval()
-    preds_list = []
     n = len(images)
+    preds_list = torch.empty(n, device=device)
 
     for start in range(0, n, batch_size):
         end = min(start + batch_size, n)
         x_batch = images[start:end].to(device)
         logits = model(x_batch)
-        preds_list.append(logits.argmax(dim=1).cpu())
+        preds_list[start:end] = logits.argmax(dim=1)
 
-    return torch.cat(preds_list, dim=0)
+    return preds_list
 
 
 def evaluate_transfer(
@@ -50,7 +50,7 @@ def evaluate_transfer(
         fooled = correct_clean & (~correct_adv)
         asr = fooled.sum().item() / num_correct_clean * 100.0
     else:
-        fooled = torch.zeros(n, dtype=torch.bool)
+        fooled = torch.zeros(n, dtype=torch.bool, device=device)
         asr = 0.0
 
     # Perturbation statistics

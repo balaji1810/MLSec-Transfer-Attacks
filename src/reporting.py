@@ -229,18 +229,18 @@ def save_fooled_images(
     n = len(labels)
 
     # Save raw tensors
-    torch.save({
-        "clean_images": clean_images,
-        "adv_images": adv_images,
-        "labels": labels,
-        "clean_preds": clean_preds,
-        "adv_preds": adv_preds,
-    }, os.path.join(save_dir, "fooled_data.pt"))
+    # torch.save({
+    #     "clean_images": clean_images,
+    #     "adv_images": adv_images,
+    #     "labels": labels,
+    #     "clean_preds": clean_preds,
+    #     "adv_preds": adv_preds,
+    # }, os.path.join(save_dir, "fooled_data.pt"))
 
     for i in range(n):
-        true_label = CIFAR10_CLASSES[labels[i]]
-        pred_clean = CIFAR10_CLASSES[clean_preds[i]]
-        pred_adv = CIFAR10_CLASSES[adv_preds[i]]
+        true_label = CIFAR10_CLASSES[labels[i].int().item()]
+        pred_clean = CIFAR10_CLASSES[clean_preds[i].int().item()]
+        pred_adv = CIFAR10_CLASSES[adv_preds[i].int().item()] 
 
         fig, axes = plt.subplots(1, 2, figsize=(8, 4))
         ax1, ax2 = axes

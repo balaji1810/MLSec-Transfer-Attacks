@@ -1,6 +1,7 @@
 import argparse
 import os
 import time
+import gc
 
 import torch
 import numpy as np
@@ -146,8 +147,12 @@ def run_single_experiment(
 
         # Free target model to save VRAM
         del target_model
+        gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
+
+    del adv_images, attack
+    gc.collect()
 
     return results
 
@@ -211,6 +216,7 @@ def main():
         data_dir=cfg["data"]["data_dir"],
         num_samples=cfg["data"]["num_samples"],
         seed=seed,
+        device=device,
     )
     print(f"Loaded {len(labels)} samples, shape={images.shape}")
 
@@ -254,6 +260,7 @@ def main():
 
             # Free surrogate to save VRAM
             del surrogate_model
+            gc.collect()
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
@@ -290,6 +297,7 @@ def main():
             all_results.extend(results)
 
         del ensemble_model
+        gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 

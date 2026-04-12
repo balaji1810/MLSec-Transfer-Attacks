@@ -43,7 +43,7 @@ def generate_adversarial_examples(
     batch_size: int = 64,
     device: torch.device | str = "cuda",
 ) -> torch.Tensor:
-    adv_images_list = []
+    adv_images = torch.empty_like(images)
     n = len(images)
 
     if(attack.__class__.__name__ == "Admix"):
@@ -58,9 +58,8 @@ def generate_adversarial_examples(
         with torch.enable_grad():
             x_adv = attack(x_batch, y_batch)
 
-        adv_images_list.append(x_adv.detach().cpu())
+        adv_images[start:end] = x_adv.detach()
 
-    adv_images = torch.cat(adv_images_list, dim=0)
     print(f"Shape of adversarial images: {adv_images.shape}")
 
     # clamp to [0,1]
