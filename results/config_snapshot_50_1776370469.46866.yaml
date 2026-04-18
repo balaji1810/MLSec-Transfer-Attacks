@@ -1,0 +1,71 @@
+attacks:
+- name: Admix
+  params:
+    decay: 1.0
+    num_classes: 10
+    portion: 0.2
+    size: 3
+    steps: 10
+- name: VMIFGSM
+  params:
+    beta: 1.5
+    decay: 1.0
+    n: 5
+    steps: 10
+- name: DIFGSM
+  params:
+    decay: 1.0
+    diversity_prob: 1.0
+    resize_rate: 0.9
+    steps: 10
+- name: TIFGSM
+  params:
+    decay: 1.0
+    kern_len: 15
+    n_sig: 3
+    steps: 10
+data:
+  batch_size: 120
+  data_dir: ./data
+  dataset: cifar10
+  num_samples: 10000
+device: auto
+enable_single_surrogate_attacks: true
+ensemble:
+  enabled: true
+model_dir: ./models
+output:
+  results_dir: ./results
+  save_adv_examples: true
+  save_csv: true
+  save_plots: true
+seed: 50
+surrogates:
+- name: Standard
+  needs_normalize: false
+  source: robustbench
+- name: cifar10_vgg16_bn
+  needs_normalize: true
+  source: chenyaofo
+- name: cifar10_resnet56
+  needs_normalize: true
+  source: chenyaofo
+- name: cifar10_mobilenetv2_x1_4
+  needs_normalize: true
+  source: chenyaofo
+- name: cifar10_repvgg_a2
+  needs_normalize: true
+  source: chenyaofo
+targets:
+- name: Andriushchenko2020Understanding
+  needs_normalize: false
+  source: robustbench
+- name: Ding2020MMA
+  needs_normalize: false
+  source: robustbench
+- name: Chen2020Adversarial
+  needs_normalize: false
+  source: robustbench
+threat_model:
+  epsilon: 0.03137254901960784
+  norm: Linf

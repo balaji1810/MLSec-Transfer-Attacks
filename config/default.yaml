@@ -5,8 +5,8 @@ device: "auto"
 data:
   dataset: "cifar10"
   data_dir: "./data"
-  num_samples: 1000
-  batch_size: 15
+  num_samples: 10000
+  batch_size: 120
 
 # --- Threat model ---
 threat_model:
@@ -39,9 +39,9 @@ surrogates:
 
 # --- Target robust models ---
 targets:
-  - name: "Wong2020Fast"
-    source: "robustbench"
-    needs_normalize: false
+  # - name: "Wong2020Fast"
+  #   source: "robustbench"
+  #   needs_normalize: false
 
   - name: "Andriushchenko2020Understanding"
     source: "robustbench"
@@ -51,9 +51,9 @@ targets:
     source: "robustbench"
     needs_normalize: false
   
-  - name: "Chen2020Efficient"
-    source: "robustbench"
-    needs_normalize: false
+  # - name: "Chen2020Efficient"
+  #   source: "robustbench"
+  #   needs_normalize: false
 
   - name: "Chen2020Adversarial"
     source: "robustbench"
@@ -121,26 +121,6 @@ targets:
 
 # --- Attacks ---
 attacks:
-  - name: "DIFGSM"
-    params:
-      steps: 10
-      decay: 1.0
-      resize_rate: 0.9
-      diversity_prob: 1.0
-
-  - name: "TIFGSM"
-    params:
-      steps: 10
-      decay: 1.0
-      kern_len: 15
-      n_sig: 3
-
-  - name: "SINIFGSM"
-    params:
-      steps: 10
-      decay: 1.0
-      m: 3
-
   - name: "Admix"
     params:
       steps: 10
@@ -155,6 +135,26 @@ attacks:
       decay: 1.0
       n: 5
       beta: 1.5
+  
+  - name: "DIFGSM"
+    params:
+      steps: 10
+      decay: 1.0
+      resize_rate: 0.9
+      diversity_prob: 1.0
+
+  - name: "TIFGSM"
+    params:
+      steps: 10
+      decay: 1.0
+      kern_len: 15
+      n_sig: 3
+
+  # - name: "SINIFGSM"
+  #   params:
+  #     steps: 10
+  #     decay: 1.0
+  #     m: 3
 # --- Ensemble surrogate attack ---
 ensemble:
   enabled: true

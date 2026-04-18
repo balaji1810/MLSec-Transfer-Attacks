@@ -124,7 +124,7 @@ def plot_transfer_accuracy_by_attack(df: pd.DataFrame, path: str) -> None:
     ax.set_xlabel("Attack Method")
     ax.set_title("Attack Success Rate by Attack and Target")
     ax.legend(title="Target Model", loc="upper left")
-    ax.set_ylim(0, 100)
+    ax.set_ylim(0, 7)
     plt.xticks(rotation=30, ha="right")
     plt.tight_layout()
     plt.savefig(path)
@@ -229,13 +229,13 @@ def save_fooled_images(
     n = len(labels)
 
     # Save raw tensors
-    # torch.save({
-    #     "clean_images": clean_images,
-    #     "adv_images": adv_images,
-    #     "labels": labels,
-    #     "clean_preds": clean_preds,
-    #     "adv_preds": adv_preds,
-    # }, os.path.join(save_dir, "fooled_data.pt"))
+    torch.save({
+        "clean_images": clean_images,
+        "adv_images": adv_images,
+        "labels": labels,
+        "clean_preds": clean_preds,
+        "adv_preds": adv_preds,
+    }, os.path.join(save_dir, "fooled_data.pt"))
 
     for i in range(n):
         true_label = CIFAR10_CLASSES[labels[i].int().item()]

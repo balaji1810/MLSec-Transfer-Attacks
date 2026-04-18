@@ -2,7 +2,8 @@
 /models/
 PyTorch_CIFAR10/
 state_dicts/
-results/
+# results/
+fooled_images/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
