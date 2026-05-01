@@ -15,9 +15,9 @@ This project generates adversarial examples on **surrogate models** (non-robust)
 | Surrogate | `cifar10_resnet56` | Resnet-56 | chenyaofo/pytorch-cifar-models |
 | Surrogate | `cifar10_mobilenetv2_x1_4` | MobileNetV2 | chenyaofo/pytorch-cifar-models |
 | Surrogate | `cifar10_repvgg_a2` | RepVGG | chenyaofo/pytorch-cifar-models |
-| Target | `Wong2020Fast` | PreActResNet-18 | RobustBench (43.21% robust acc) |
+| Target | `Bartoldson2024Adversarial_WRN-94-16` | WideResNet-94-16 | RobustBench (73.71% robust acc) |
 | Target | `Ding2020MMA` | WideResNet-28-4	 | RobustBench (41.44% robust acc) |
-| Target | `Chen2020Efficient` | WideResNet-34-10 | RobustBench (51.12% robust acc) |
+| Target | `Bai2024MixedNUTS` | ResNet-152 + WideResNet-70-16 | RobustBench (69.71% robust acc) |
 
 ### Attacks (from `torchattack`)
 
@@ -25,7 +25,6 @@ This project generates adversarial examples on **surrogate models** (non-robust)
 |--------|-------------|
 | DI-FGSM | Diverse Input FGSM (input diversity) |
 | TI-FGSM | Translation-Invariant FGSM |
-| SI-NI-FGSM | Scale-Invariant Nesterov Iterative FGSM |
 | Admix | Admix input transformation |
 | VMI-FGSM | Variance-tuned MI-FGSM |
 
@@ -33,7 +32,9 @@ This project generates adversarial examples on **surrogate models** (non-robust)
 
 ### Prerequisites
 
-Python 3.10+ with PyTorch, in a conda environment.
+- Python 3.10+ with PyTorch, in a conda environment.
+- Minimum 16 GB NVIDIA GPU recommended.
+- \>=8 GB RAM recommended.
 
 ### Install dependencies
 
@@ -41,7 +42,7 @@ Python 3.10+ with PyTorch, in a conda environment.
 pip install -r requirements.txt
 ```
 
-All dependencies (torch, torchvision, robustbench, torchattack, etc.) should already be installed if you followed the project setup.
+All dependencies (torch, torchvision, robustbench, torchattack, etc.) should already be installed if you followed the project setup. Install suitable CUDA version of PyTorch for your device.
 
 ## Usage
 
