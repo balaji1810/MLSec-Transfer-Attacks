@@ -57,13 +57,13 @@ surrogates:
   needs_normalize: true
   source: chenyaofo
 targets:
-- name: Andriushchenko2020Understanding
-  needs_normalize: false
-  source: robustbench
 - name: Ding2020MMA
   needs_normalize: false
   source: robustbench
-- name: Chen2020Adversarial
+- name: Bartoldson2024Adversarial_WRN-94-16
+  needs_normalize: false
+  source: robustbench
+- name: Bai2024MixedNUTS
   needs_normalize: false
   source: robustbench
 threat_model:

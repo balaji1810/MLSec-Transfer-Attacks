@@ -39,85 +39,17 @@ surrogates:
 
 # --- Target robust models ---
 targets:
-  # - name: "Wong2020Fast"
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  - name: "Andriushchenko2020Understanding"
-    source: "robustbench"
-    needs_normalize: false
-
   - name: "Ding2020MMA"
     source: "robustbench"
     needs_normalize: false
-  
-  # - name: "Chen2020Efficient"
-  #   source: "robustbench"
-  #   needs_normalize: false
 
-  - name: "Chen2020Adversarial"
+  - name: 'Bartoldson2024Adversarial_WRN-94-16'
     source: "robustbench"
     needs_normalize: false
 
-  # - name: 'Kang2021Stable'  # WideResNet-70-16
-  #   source: "robustbench"
-  #   needs_normalize: false
-  
-  # - name: "Rice2020Overfitting"
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Engstrom2019Robustness"
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Zhang2019You"
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Sitawarin2020Improving"
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Huang2020Self"
-  #   source: "robustbench"
-  #   needs_normalize: false
-  
-  # - name: "Zhang2019Theoretically"
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Carmon2019Unlabeled"
-  #   source: "robustbench"
-  #   needs_normalize: false  
-  
-  # - name: 'Bartoldson2024Adversarial_WRN-94-16' # WideResNet-94-16
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Rebuffi2021Fixing_70_16_cutmix_extra"  # WideResNet-70-16
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Wang2023Better_WRN-70-16"  # WideResNet-70-16
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Gowal2021Improving_28_10_ddpm_100m"  # WideResNet-28-10
-  #   source: "robustbench"
-  #   needs_normalize: false
-  
-  # - name: "Sehwag2021Proxy_R18" # ResNet-18
-  #   source: "robustbench"
-  #   needs_normalize: false
-  
-  # - name: "Addepalli2022Efficient_RN18" # ResNet-18
-  #   source: "robustbench"
-  #   needs_normalize: false
-
-  # - name: "Xu2023Exploring_WRN-28-10" # WideResNet-28-10
-  #   source: "robustbench"
-  #   needs_normalize: false
+  - name: "Bai2024MixedNUTS"
+    source: "robustbench"
+    needs_normalize: false
 
 # --- Attacks ---
 attacks:
@@ -150,11 +82,6 @@ attacks:
       kern_len: 15
       n_sig: 3
 
-  # - name: "SINIFGSM"
-  #   params:
-  #     steps: 10
-  #     decay: 1.0
-  #     m: 3
 # --- Ensemble surrogate attack ---
 ensemble:
   enabled: true

@@ -48,7 +48,7 @@ def generate_adversarial_examples(
 
     if(attack.__class__.__name__ == "Admix"):
         print(f"Using {attack.__class__.__name__} attack, reducing batch size to save memory.")
-        batch_size = int(batch_size / 3)
+        batch_size = int(batch_size / 10)
 
     for start in tqdm(range(0, n, batch_size), desc="Generating adversarial examples"):
         end = min(start + batch_size, n)
@@ -61,8 +61,5 @@ def generate_adversarial_examples(
         adv_images[start:end] = x_adv.detach()
 
     print(f"Shape of adversarial images: {adv_images.shape}")
-
-    # clamp to [0,1]
-    # adv_images = adv_images.clamp(0.0, 1.0)
 
     return adv_images
